@@ -17,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   username: z.string(),
@@ -37,10 +38,10 @@ const IdeaList = () => {
   return (
     <div className={`flex flex-col items-center py-6`}>
       <h1
-        className={`
+        className={cn(`
           text-center text-2xl
           p-10
-        `}
+        `)}
       >
         Daftar Ide
       </h1>
