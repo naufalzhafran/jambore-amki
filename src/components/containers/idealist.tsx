@@ -35,7 +35,7 @@ const IdeaList = () => {
   }
 
   return (
-    <div className={`flex flex-col items-center`}>
+    <div className={`flex flex-col items-center py-6`}>
       <h1
         className={`
           text-center text-2xl

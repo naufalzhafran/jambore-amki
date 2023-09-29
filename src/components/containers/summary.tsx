@@ -1,19 +1,29 @@
+import { Button } from "../ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
 
 const Summary = () => {
   return (
-    <div className={`my-8`}>
+    <div
+      className={`
+          flex flex-col gap-2 items-center
+          bg-primary
+          p-10
+        `}
+    >
       <h1
         className={`
-          text-center text-2xle
-          p-10
+          text-center text-3xl text-white
+          p-5
         `}
       >
         Ayo Bawa Kreatifitas ke Sini
       </h1>
+      <Button variant="secondary" className={`w-fit`}>
+        Daftarkan Ide Anda Disini
+      </Button>
       <div
         className={`
-          w-full
+          w-full mt-5
           flex items-center justify-center flex-wrap gap-4
         `}
       >

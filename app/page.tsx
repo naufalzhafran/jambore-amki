@@ -1,5 +1,6 @@
 import IdeaList from "@/components/containers/idealist";
 import Summary from "@/components/containers/summary";
+import Footer from "@/components/layout/footer";
 import Header from "@/components/layout/header";
 
 export default function Home() {
@@ -10,6 +11,7 @@ export default function Home() {
         <Summary />
         <IdeaList />
       </main>
+      <Footer />
     </>
   );
 }
