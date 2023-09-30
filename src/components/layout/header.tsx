@@ -1,8 +1,34 @@
-import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { LogOut, User } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import PocketBaseInstance from "@/lib/pocketbase";
+
+import { Button } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { useToast } from "../ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
+  const [isClient, setIsClient] = useState(false);
+  const { toast } = useToast();
+  const router = useRouter();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <header
       className={cn(`
@@ -13,9 +39,45 @@ const Header = () => {
     >
       <div> LOGO </div>
       <div>
-        <Button asChild>
-          <Link href="/auth">Login</Link>
-        </Button>
+        {isClient && PocketBaseInstance.authStore.isValid ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                {PocketBaseInstance.authStore.model?.fullname}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                onClick={() => {
+                  PocketBaseInstance.authStore.clear();
+                  toast({
+                    title: "SUCCESS",
+                    description: "Logout Success",
+                  });
+                  setTimeout(() => router.push("/"), 500);
+                }}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Button asChild>
+            <Link href="/auth">Login</Link>
+          </Button>
+        )}
       </div>
     </header>
   );

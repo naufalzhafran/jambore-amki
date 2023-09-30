@@ -1,8 +1,11 @@
 "use client";
 
+import * as z from "zod";
+import useSWRMutation from "swr/mutation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { Loader2 } from "lucide-react";
+import { ClientResponseError } from "pocketbase";
 
 import {
   Form,
@@ -21,6 +24,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { PostLoginUser } from "@/services/users";
+import { useRouter } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -30,12 +36,38 @@ const formSchema = z
   .required();
 
 const Login = () => {
+  const { toast } = useToast();
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const { trigger, isMutating } = useSWRMutation("/users/login", PostLoginUser);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      await trigger({ email: values.email, password: values.password });
+      toast({
+        title: "SUCCESS",
+        description: "Login Success",
+      });
+      setTimeout(() => router.push("/"), 500);
+    } catch (err) {
+      if (err instanceof ClientResponseError) {
+        toast({
+          variant: "destructive",
+          title: "ERROR",
+          description: JSON.stringify(err.response, null, 2),
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "ERROR",
+          description: "Please try again later",
+        });
+      }
+    }
   };
 
   return (
@@ -81,7 +113,8 @@ const Login = () => {
         </Form>
       </CardContent>
       <CardFooter>
-        <Button type="submit" form="register-form">
+        <Button disabled={isMutating} type="submit" form="register-form">
+          {isMutating ?? <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Login
         </Button>
       </CardFooter>

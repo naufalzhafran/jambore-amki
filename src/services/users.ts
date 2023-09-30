@@ -10,3 +10,12 @@ export const PostRegisterUser = async (
   );
 };
 
+export const PostLoginUser = async (
+  _key: string,
+  { arg }: { arg: { email: string; password: string } }
+) => {
+  return await PocketBaseInstance.collection("users").authWithPassword(
+    arg.email,
+    arg.password
+  );
+};

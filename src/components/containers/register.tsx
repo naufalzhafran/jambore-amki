@@ -1,9 +1,11 @@
 "use client";
 
+import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import useSWRMutation from "swr/mutation";
+import { Loader2 } from "lucide-react";
+import { ClientResponseError } from "pocketbase";
 
 import {
   Form,
@@ -22,12 +24,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Separator } from "../ui/separator";
-import PocketBaseInstance from "@/lib/pocketbase";
 import { PostRegisterUser } from "@/services/users";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2 } from "lucide-react";
-import { ClientResponseError } from "pocketbase";
+
+import { Separator } from "../ui/separator";
 
 const formSchema = z
   .object({
@@ -53,16 +53,7 @@ const Register = () => {
 
   const { trigger, isMutating } = useSWRMutation(
     "/users/create",
-    PostRegisterUser,
-    {
-      onError(err: ClientResponseError) {
-        toast({
-          variant: "destructive",
-          title: "ERROR",
-          description: JSON.stringify(err.response, null, 2),
-        });
-      },
-    }
+    PostRegisterUser
   );
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
