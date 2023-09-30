@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import useSWRMutation from "swr/mutation";
 
 import {
   Form,
@@ -22,6 +23,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "../ui/separator";
+import PocketBaseInstance from "@/lib/pocketbase";
+import { PostRegisterUser } from "@/services/users";
+import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
+import { ClientResponseError } from "pocketbase";
 
 const formSchema = z
   .object({
@@ -39,12 +45,59 @@ const formSchema = z
   });
 
 const Register = () => {
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const { trigger, isMutating } = useSWRMutation(
+    "/users/create",
+    PostRegisterUser,
+    {
+      onError(err: ClientResponseError) {
+        toast({
+          variant: "destructive",
+          title: "ERROR",
+          description: JSON.stringify(err.response, null, 2),
+        });
+      },
+    }
+  );
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const data = {
+      username: values.fullname,
+      email: values.email,
+      emailVisibility: true,
+      password: values.password,
+      passwordConfirm: values.confirm,
+      fullname: values.fullname,
+      university: values.university,
+      phone_number: values.phone_number,
+    };
+
+    try {
+      await trigger({ data });
+      toast({
+        title: "SUCCESS",
+        description: "Your account is created, Please try to login.",
+      });
+    } catch (err) {
+      if (err instanceof ClientResponseError) {
+        toast({
+          variant: "destructive",
+          title: "ERROR",
+          description: JSON.stringify(err.response, null, 2),
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "ERROR",
+          description: "Please try again later",
+        });
+      }
+    }
   };
 
   return (
@@ -148,7 +201,8 @@ const Register = () => {
         </Form>
       </CardContent>
       <CardFooter>
-        <Button type="submit" form="register-form">
+        <Button disabled={isMutating} type="submit" form="register-form">
+          {isMutating ?? <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Register
         </Button>
       </CardFooter>

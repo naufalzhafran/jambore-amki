@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 const Header = () => {
   return (
@@ -12,7 +13,9 @@ const Header = () => {
     >
       <div> LOGO </div>
       <div>
-        <Button>Login</Button>
+        <Button asChild>
+          <Link href="/auth">Login</Link>
+        </Button>
       </div>
     </header>
   );
