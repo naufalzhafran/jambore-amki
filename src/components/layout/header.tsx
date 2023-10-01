@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, UserCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import PocketBaseInstance from "@/lib/pocketbase";
@@ -19,6 +19,7 @@ import {
 } from "../ui/dropdown-menu";
 import { useToast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const Header = () => {
   const [isClient, setIsClient] = useState(false);
@@ -37,18 +38,20 @@ const Header = () => {
         bg-white 
      `)}
     >
-      <div> LOGO </div>
+      <div>
+        <Image src="/logo.webp" width={75} height={50} alt="logo" />
+      </div>
       <div>
         {isClient && PocketBaseInstance.authStore.isValid ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">
+              <Button className={`gap-2`} variant="outline">
+                <UserCircle />
                 {PocketBaseInstance.authStore.model?.fullname}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
-
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem>

@@ -39,7 +39,7 @@ const IdeaList = () => {
     <div className={`flex flex-col items-center py-6`}>
       <h1
         className={cn(`
-          text-center text-2xl
+          text-center text-4xl font-bold
           p-10
         `)}
       >

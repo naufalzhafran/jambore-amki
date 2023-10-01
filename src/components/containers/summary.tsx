@@ -1,25 +1,34 @@
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
 
 const Summary = () => {
   return (
     <div
-      className={`
-          flex flex-col gap-2 items-center
+      className={cn(`
+          flex flex-col gap-2 items-center justify-center
           bg-primary
-          p-10
-        `}
+          min-h-[calc(100vh-80px)] p-10
+        `)}
     >
       <h1
-        className={`
-          text-center text-3xl text-white
+        className={cn(`
+          text-center text-6xl text-white font-black
           p-5
-        `}
+        `)}
       >
-        Ayo Bawa Kreatifitas ke Sini
+        JAMBORE NASIONAL <br /> AMKI MUDA
       </h1>
-      <Button variant="secondary" className={`w-fit`}>
-        Daftarkan Ide Anda Disini
+      <h2
+        className={cn(`
+          text-center text-3xl text-white font-semibold
+          p-2
+        `)}
+      >
+        Inpirasi Membangun Negeri
+      </h2>
+      <Button variant="secondary" className={`m-6 w-fit`}>
+        Daftarkan Karya Anda Disini
       </Button>
       <div
         className={`
