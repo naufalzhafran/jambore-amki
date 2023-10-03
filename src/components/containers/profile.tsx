@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import useSWRMutation from "swr/mutation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
@@ -12,6 +13,8 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
+
+import { UpdateRegisteredUser } from "@/services/users";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,8 +24,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Separator } from "../ui/separator";
 import { cn } from "@/lib/utils";
+import { useToast } from "../ui/use-toast";
+import { ClientResponseError } from "pocketbase";
 
 const formSchema = z
   .object({
@@ -33,13 +37,53 @@ const formSchema = z
   })
   .required();
 
-const Profile = () => {
+const Profile = ({
+  profileData,
+}: {
+  profileData?: Partial<z.infer<typeof formSchema>> & { id?: string };
+}) => {
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: { ...profileData },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const { trigger, isMutating } = useSWRMutation(
+    "/users/create",
+    UpdateRegisteredUser
+  );
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!profileData?.id) {
+      toast({
+        variant: "destructive",
+        title: "ERROR",
+        description: "Please try again later",
+      });
+    }
+
+    try {
+      await trigger({ userId: profileData?.id || "", data: values });
+      toast({
+        title: "SUCCESS",
+        description: "Your data is successfully changed",
+      });
+    } catch (err) {
+      if (err instanceof ClientResponseError) {
+        toast({
+          variant: "destructive",
+          title: "ERROR",
+          description: JSON.stringify(err.response, null, 2),
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "ERROR",
+          description: "Please try again later",
+        });
+      }
+    }
   };
 
   return (

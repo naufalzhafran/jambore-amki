@@ -42,53 +42,54 @@ const Header = () => {
         <Image src="/logo.webp" width={75} height={50} alt="logo" />
       </div>
       <div>
-        {isClient && PocketBaseInstance.authStore.isValid ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className={`gap-2`} variant="outline">
-                <UserCircle />
-                {PocketBaseInstance.authStore.model?.fullname}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                  <Link href="/profile">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
+        {isClient ? (
+          PocketBaseInstance.authStore.isValid ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className={`gap-2`} variant="outline">
+                  <UserCircle />
+                  {PocketBaseInstance.authStore.model?.fullname}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
 
-              <DropdownMenuItem
-                onClick={() => {
-                  PocketBaseInstance.authStore.clear();
-                  document.cookie = PocketBaseInstance.authStore.exportToCookie(
-                    {
-                      httpOnly: false,
-                    }
-                  );
-                  
-                  toast({
-                    title: "SUCCESS",
-                    description: "Logout Success",
-                  });
-                  setTimeout(() => router.push("/"), 500);
-                }}
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <Button asChild>
-            <Link href="/auth">Login</Link>
-          </Button>
-        )}
+                <DropdownMenuItem
+                  onClick={() => {
+                    PocketBaseInstance.authStore.clear();
+                    document.cookie =
+                      PocketBaseInstance.authStore.exportToCookie({
+                        httpOnly: false,
+                      });
+
+                    toast({
+                      title: "SUCCESS",
+                      description: "Logout Success",
+                    });
+                    setTimeout(() => router.push("/"), 500);
+                  }}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button asChild>
+              <Link href="/auth">Login</Link>
+            </Button>
+          )
+        ) : null}
       </div>
     </header>
   );
