@@ -1,17 +1,8 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { Suspense, useState } from "react";
+import dynamic from "next/dynamic";
 
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormControl,
-  FormLabel,
-  FormMessage,
-} from "../ui/form";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,104 +11,69 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import IdeaImgUploader from "./ideaimguploader";
+import { useToast } from "../ui/use-toast";
 
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
-
-const formSchema = z
-  .object({
-    problem: z.string(),
-    idea: z.string(),
-    impact: z.string(),
-  })
-  .required();
+const EditorComp = dynamic(() => import("../ui/rich-editor"), { ssr: false });
 
 const IdeaEdit = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-  });
+  const [longDesc, setLongDesc] = useState("");
+  const [ideaTitle, setIdeaTitle] = useState("");
+  const [abstract, setAbstract] = useState("");
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-  };
+  const { toast } = useToast();
 
   return (
-    <main className={cn(`flex items-center justify-center`)}>
+    <main
+      className={cn(
+        `flex items-center justify-center min-h-[calc(100vh-80px)]`
+      )}
+    >
       <Card className={cn(`w-full h-fit md:max-w-2xl`)}>
         <CardHeader>
-          <CardTitle />
+          <CardTitle>Deskripsikan Ide Anda</CardTitle>
         </CardHeader>
+
+        <IdeaImgUploader toastFn={toast} />
+
         <CardContent className="space-y-2">
-          
-          <Form {...form}>
-            <form
-              className="space-y-2"
-              id="register-form"
-              onSubmit={form.handleSubmit(onSubmit)}
-            >
-              <FormField
-                control={form.control}
-                name="problem"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Permasalahan</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Type your message here."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <div className="w-full items-center gap-1.5">
+            <Label htmlFor="title">Judul</Label>
+            <Input
+              id="title"
+              placeholder="Judul"
+              value={ideaTitle}
+              onChange={(e) => setIdeaTitle(e.target.value)}
+            />
+          </div>
 
-              <FormField
-                control={form.control}
-                name="idea"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ide</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Type your message here."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <div className="w-full items-center gap-1.5">
+            <Label htmlFor="abstract">Abstrak/Rangkuman</Label>
+            <Textarea
+              id="abstract"
+              value={abstract}
+              placeholder="Maksimal 150 karakter"
+              onChange={(e) => setAbstract(e.target.value)}
+            />
+          </div>
 
-              <FormField
-                control={form.control}
-                name="impact"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Impact</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Type your message here."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+          <Suspense fallback={<div />}>
+            <div className="w-full items-center gap-1.5">
+              <Label>Deskripsi Panjang</Label>
+              <EditorComp
+                markdown={longDesc}
+                onChange={(val) => setLongDesc(val)}
               />
-            </form>
-          </Form>
+            </div>
+          </Suspense>
         </CardContent>
         <CardFooter>
           <Button type="submit" form="register-form">
-            Change Data
+            Submit Idea
           </Button>
         </CardFooter>
       </Card>

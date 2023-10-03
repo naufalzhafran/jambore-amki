@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
@@ -10,7 +12,7 @@ import {
   CardContent,
   CardFooter,
 } from "../ui/card";
-import { Plus } from "lucide-react";
+
 
 const SubmittedIdeas = () => {
   return (
@@ -40,14 +42,20 @@ const SubmittedIdeas = () => {
             <Button>Delete</Button>
           </CardFooter>
         </Card>
-
         <Card
-          className={`
-              w-full max-w-[300px] p-10
-              flex items-center justify-center
-            `}
+          className={cn(`
+            w-full max-w-[300px] 
+            `)}
         >
-          <Plus />
+          <Link
+            className={cn(`
+              w-full h-full p-10
+              flex items-center justify-center
+            `)}
+            href="/profile/ideas/create"
+          >
+            <Plus />
+          </Link>
         </Card>
       </div>
     </main>

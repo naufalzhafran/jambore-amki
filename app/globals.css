@@ -47,13 +47,43 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.rich-editor h1 {
+  @apply text-3xl font-bold;
+}
+
+.rich-editor h2 {
+  @apply text-2xl font-bold;
+}
+
+.rich-editor h3 {
+  @apply text-2xl font-semibold;
+}
+
+.rich-editor h4 {
+  @apply text-xl font-semibold;
+}
+
+.rich-editor h5 {
+  @apply text-xl font-normal;
+}
+
+.rich-editor h6 {
+  @apply text-lg font-normal;
+}
+
+.rich-editor ul {
+  @apply list-disc list-inside;
+}
+
+.rich-editor ol {
+  @apply list-decimal list-inside;
 }

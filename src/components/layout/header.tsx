@@ -58,7 +58,13 @@ const Header = () => {
                   <DropdownMenuItem asChild>
                     <Link href="/profile">
                       <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
+                      <span>Profil</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile/ideas">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Ide Saya</span>
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
