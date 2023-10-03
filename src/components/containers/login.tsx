@@ -1,6 +1,7 @@
 "use client";
 
 import * as z from "zod";
+import { useRouter } from "next/navigation";
 import useSWRMutation from "swr/mutation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +27,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { PostLoginUser } from "@/services/users";
-import { useRouter } from "next/navigation";
+
+import PocketBaseInstance from "@/lib/pocketbase";
 
 const formSchema = z
   .object({
@@ -52,6 +54,7 @@ const Login = () => {
         title: "SUCCESS",
         description: "Login Success",
       });
+      document.cookie = PocketBaseInstance.authStore.exportToCookie({ httpOnly: false });
       setTimeout(() => router.push("/"), 500);
     } catch (err) {
       if (err instanceof ClientResponseError) {

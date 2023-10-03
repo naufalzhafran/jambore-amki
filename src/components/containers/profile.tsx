@@ -45,7 +45,7 @@ const Profile = () => {
   return (
     <Card className={cn(`w-full h-fit md:max-w-2xl`)}>
       <CardHeader>
-        <CardTitle>Register</CardTitle>
+        <CardTitle>Profile</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         <Form {...form}>

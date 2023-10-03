@@ -54,9 +54,11 @@ const Header = () => {
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
@@ -64,6 +66,12 @@ const Header = () => {
               <DropdownMenuItem
                 onClick={() => {
                   PocketBaseInstance.authStore.clear();
+                  document.cookie = PocketBaseInstance.authStore.exportToCookie(
+                    {
+                      httpOnly: false,
+                    }
+                  );
+                  
                   toast({
                     title: "SUCCESS",
                     description: "Logout Success",
