@@ -14,9 +14,15 @@ type IdeaImgUploaderProps = {
   };
   files: File[];
   setFiles: (files: File[]) => void;
+  imagesUrl: string[];
 };
 
-const IdeaImgUploader = ({ toastFn, files, setFiles }: IdeaImgUploaderProps) => {
+const IdeaImgUploader = ({
+  toastFn,
+  files,
+  setFiles,
+  imagesUrl,
+}: IdeaImgUploaderProps) => {
   const [selectedFile, setSelectedFile] = useState(0);
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target?.files) {
@@ -54,6 +60,8 @@ const IdeaImgUploader = ({ toastFn, files, setFiles }: IdeaImgUploaderProps) => 
           src={URL.createObjectURL(files[selectedFile])}
           alt="idea"
         />
+      ) : imagesUrl && imagesUrl.length ? (
+        <img className="w-full rounded-md" src={imagesUrl[0]} alt="idea" />
       ) : null}
       <div className={cn(`flex items-center justify-center w-full h-full`)}>
         <label className="flex cursor-pointer flex-col w-full h-full border-2 rounded-md border-dashed hover:bg-gray-100 hover:border-gray-300">

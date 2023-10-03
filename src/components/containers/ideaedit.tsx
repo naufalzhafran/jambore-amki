@@ -3,6 +3,10 @@
 import { Suspense, useState } from "react";
 import dynamic from "next/dynamic";
 import useSWRMutation from "swr/mutation";
+import useSWR from "swr";
+import { ClientResponseError } from "pocketbase";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { useParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,9 +22,13 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import IdeaImgUploader from "./ideaimguploader";
 import { useToast } from "../ui/use-toast";
-import { PostCreateIdeas } from "@/services/ideas";
-import { ClientResponseError } from "pocketbase";
-import { Loader2 } from "lucide-react";
+import {
+  GetIdeaDetail,
+  PostCreateIdeas,
+  PostUpdateIdeas,
+} from "@/services/ideas";
+import PocketBaseInstance from "@/lib/pocketbase";
+import Link from "next/link";
 
 const EditorComp = dynamic(() => import("../ui/rich-editor"), { ssr: false });
 
@@ -28,13 +36,52 @@ const IdeaEdit = ({ userId }: { userId: string }) => {
   const [longDesc, setLongDesc] = useState("");
   const [ideaTitle, setIdeaTitle] = useState("");
   const [abstract, setAbstract] = useState("");
+  const [imageFilename, setImageFilename] = useState("");
   const [files, setFiles] = useState<File[]>([]);
+  const [serverImage, setServerImage] = useState("");
+
+  const params = useParams();
 
   const { toast } = useToast();
 
-  const { trigger, isMutating } = useSWRMutation(
-    "/idea/create",
-    PostCreateIdeas
+  const { trigger: triggerCreate, isMutating: isMutatingCreate } =
+    useSWRMutation("/idea/create", PostCreateIdeas);
+
+  const { trigger: triggerUpdate, isMutating: isMutatingUpdate } =
+    useSWRMutation("/idea/update", PostUpdateIdeas);
+
+  const { isLoading } = useSWR(
+    params.slug ? { arg: { record_id: params.slug } } : null,
+    GetIdeaDetail,
+
+    {
+      onSuccess: (data) => {
+        setIdeaTitle(data.title);
+        setLongDesc(data.description);
+        setAbstract(data.abstract);
+        setImageFilename(data.images[0]);
+        setServerImage(
+          data.images.length
+            ? PocketBaseInstance.files.getUrl(data, data.images[0])
+            : ""
+        );
+      },
+      onError: (err) => {
+        if (err instanceof ClientResponseError) {
+          toast({
+            variant: "destructive",
+            title: "ERROR",
+            description: JSON.stringify(err.response, null, 2),
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "ERROR",
+            description: "Please try again later",
+          });
+        }
+      },
+    }
   );
 
   const handleSubmit = async () => {
@@ -47,13 +94,26 @@ const IdeaEdit = ({ userId }: { userId: string }) => {
 
     if (files.length) {
       formData.append("images", files[0]);
+
+      if (params.slug) {
+        formData.append("images-", imageFilename);
+      }
     }
 
     try {
-      await trigger({ data: formData });
+      if (params.slug) {
+        await triggerUpdate({
+          record_id: params.slug as string,
+          data: formData,
+        });
+      } else {
+        await triggerCreate({ data: formData });
+      }
       toast({
         title: "SUCCESS",
-        description: "Your Idea is submitted",
+        description: params.slug
+          ? "Your Idea is Updated "
+          : "Your Idea is submitted",
       });
     } catch (err) {
       if (err instanceof ClientResponseError) {
@@ -75,15 +135,27 @@ const IdeaEdit = ({ userId }: { userId: string }) => {
   return (
     <main
       className={cn(
-        `flex items-center justify-center min-h-[calc(100vh-80px)]`
+        `flex flex-col items-center justify-center min-h-[calc(100vh-80px)]`
       )}
     >
+      <div className="w-full h-fit md:max-w-2xl">
+        <Button asChild variant="outline" className="my-2">
+          <Link href="/profile/ideas">
+            <ArrowLeft /> Back
+          </Link>
+        </Button>
+      </div>
       <Card className={cn(`w-full h-fit md:max-w-2xl`)}>
         <CardHeader>
           <CardTitle>Deskripsikan Ide Anda</CardTitle>
         </CardHeader>
 
-        <IdeaImgUploader toastFn={toast} files={files} setFiles={setFiles} />
+        <IdeaImgUploader
+          toastFn={toast}
+          files={files}
+          imagesUrl={serverImage ? [serverImage] : []}
+          setFiles={setFiles}
+        />
 
         <CardContent>
           <div className="w-full items-center gap-1.5">
@@ -123,7 +195,9 @@ const IdeaEdit = ({ userId }: { userId: string }) => {
               handleSubmit();
             }}
           >
-             {isMutating ?? <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isMutatingCreate ?? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
             Submit Idea
           </Button>
         </CardFooter>

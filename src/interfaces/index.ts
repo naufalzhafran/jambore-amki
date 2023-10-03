@@ -8,6 +8,7 @@ export type UserModel = {
 };
 
 export type IdeasModel = {
+  id: string;
   title: string;
   abstract: string;
   description: string;

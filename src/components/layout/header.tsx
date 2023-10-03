@@ -39,7 +39,9 @@ const Header = () => {
      `)}
     >
       <div>
-        <Image src="/logo.webp" width={75} height={50} alt="logo" />
+        <Link href={"/"}>
+          <Image src="/logo.webp" width={75} height={50} alt="logo" />
+        </Link>
       </div>
       <div>
         {isClient ? (
