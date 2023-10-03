@@ -6,3 +6,11 @@ export type UserModel = {
   password: string;
   confirm: string;
 };
+
+export type IdeasModel = {
+  title: string;
+  abstract: string;
+  description: string;
+  images: string[];
+  user: string;
+};

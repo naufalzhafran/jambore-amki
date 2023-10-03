@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from "react";
 import dynamic from "next/dynamic";
+import useSWRMutation from "swr/mutation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,15 +18,59 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import IdeaImgUploader from "./ideaimguploader";
 import { useToast } from "../ui/use-toast";
+import { PostCreateIdeas } from "@/services/ideas";
+import { ClientResponseError } from "pocketbase";
+import { Loader2 } from "lucide-react";
 
 const EditorComp = dynamic(() => import("../ui/rich-editor"), { ssr: false });
 
-const IdeaEdit = () => {
+const IdeaEdit = ({ userId }: { userId: string }) => {
   const [longDesc, setLongDesc] = useState("");
   const [ideaTitle, setIdeaTitle] = useState("");
   const [abstract, setAbstract] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
 
   const { toast } = useToast();
+
+  const { trigger, isMutating } = useSWRMutation(
+    "/idea/create",
+    PostCreateIdeas
+  );
+
+  const handleSubmit = async () => {
+    const formData = new FormData();
+
+    formData.append("title", ideaTitle);
+    formData.append("abstract", abstract);
+    formData.append("description", longDesc);
+    formData.append("user", userId);
+
+    if (files.length) {
+      formData.append("images", files[0]);
+    }
+
+    try {
+      await trigger({ data: formData });
+      toast({
+        title: "SUCCESS",
+        description: "Your Idea is submitted",
+      });
+    } catch (err) {
+      if (err instanceof ClientResponseError) {
+        toast({
+          variant: "destructive",
+          title: "ERROR",
+          description: JSON.stringify(err.response, null, 2),
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "ERROR",
+          description: "Please try again later",
+        });
+      }
+    }
+  };
 
   return (
     <main
@@ -38,9 +83,9 @@ const IdeaEdit = () => {
           <CardTitle>Deskripsikan Ide Anda</CardTitle>
         </CardHeader>
 
-        <IdeaImgUploader toastFn={toast} />
+        <IdeaImgUploader toastFn={toast} files={files} setFiles={setFiles} />
 
-        <CardContent className="space-y-2">
+        <CardContent>
           <div className="w-full items-center gap-1.5">
             <Label htmlFor="title">Judul</Label>
             <Input
@@ -72,7 +117,13 @@ const IdeaEdit = () => {
           </Suspense>
         </CardContent>
         <CardFooter>
-          <Button type="submit" form="register-form">
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+          >
+             {isMutating ?? <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Submit Idea
           </Button>
         </CardFooter>

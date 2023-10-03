@@ -12,12 +12,12 @@ type IdeaImgUploaderProps = {
     dismiss: () => void;
     update: (props: ToasterToast) => void;
   };
+  files: File[];
+  setFiles: (files: File[]) => void;
 };
 
-const IdeaImgUploader = ({ toastFn }: IdeaImgUploaderProps) => {
-  const [files, setFile] = useState<File[]>([]);
+const IdeaImgUploader = ({ toastFn, files, setFiles }: IdeaImgUploaderProps) => {
   const [selectedFile, setSelectedFile] = useState(0);
-  const [message, setMessage] = useState("");
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target?.files) {
       let file = e.target.files;
@@ -26,7 +26,7 @@ const IdeaImgUploader = ({ toastFn }: IdeaImgUploaderProps) => {
         const fileType = file[i]["type"];
         const validImageTypes = ["image/gif", "image/jpeg", "image/png"];
         if (validImageTypes.includes(fileType)) {
-          setFile([file[0]]);
+          setFiles([file[0]]);
         } else {
           toastFn({
             variant: "destructive",
@@ -39,7 +39,7 @@ const IdeaImgUploader = ({ toastFn }: IdeaImgUploaderProps) => {
   };
 
   const removeImage = (i: string) => {
-    setFile(files.filter((x) => x.name !== i));
+    setFiles(files.filter((x) => x.name !== i));
   };
 
   return (
