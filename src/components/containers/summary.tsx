@@ -1,8 +1,17 @@
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { GetListIdeas } from "@/services/ideas";
+import Link from "next/link";
 
-const Summary = () => {
+const Summary = async () => {
+  const data = await GetListIdeas({
+    arg: {
+      page: 1,
+      perPage: 50,
+    },
+  });
+
   return (
     <div
       className={cn(`
@@ -27,8 +36,8 @@ const Summary = () => {
       >
         Inpirasi Membangun Negeri
       </h2>
-      <Button variant="secondary" className={`m-6 w-fit`}>
-        Daftarkan Karya Anda Disini
+      <Button asChild variant="secondary" className={`m-6 w-fit`}>
+        <Link href="/profile/ideas/create">Daftarkan Karya Anda Disini</Link>
       </Button>
       <div
         className={`
@@ -38,13 +47,7 @@ const Summary = () => {
       >
         <Card className={`w-full max-w-[200px]`}>
           <CardHeader className={`items-center`}>
-            <CardTitle>50000</CardTitle>
-            <CardDescription>Jumlah Peserta</CardDescription>
-          </CardHeader>
-        </Card>
-        <Card className={`w-full max-w-[200px]`}>
-          <CardHeader className={`items-center`}>
-            <CardTitle>50000</CardTitle>
+            <CardTitle>{data?.totalItems}</CardTitle>
             <CardDescription>Jumlah Ide</CardDescription>
           </CardHeader>
         </Card>

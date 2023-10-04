@@ -1,15 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import useSWR from "swr";
 
 import { useToast } from "../ui/use-toast";
 import { Button } from "../ui/button";
-import { Form, FormField, FormItem, FormControl } from "../ui/form";
 import { Input } from "../ui/input";
 import {
   Card,
@@ -119,7 +115,7 @@ const IdeaList = () => {
                       item as unknown as {
                         expand: { user: { fullname: string } };
                       }
-                    ).expand.user.fullname
+                    ).expand?.user?.fullname
                   }
                 </CardDescription>
               </CardHeader>
