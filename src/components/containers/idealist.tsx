@@ -1,14 +1,16 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import useSWR from "swr";
 
+import { useToast } from "../ui/use-toast";
 import { Button } from "../ui/button";
 import { Form, FormField, FormItem, FormControl } from "../ui/form";
 import { Input } from "../ui/input";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -18,21 +20,49 @@ import {
   CardTitle,
 } from "../ui/card";
 import { cn } from "@/lib/utils";
-
-const formSchema = z.object({
-  username: z.string(),
-});
+import { useState } from "react";
+import { GetListIdeas } from "@/services/ideas";
+import { ClientResponseError } from "pocketbase";
+import PocketBaseInstance from "@/lib/pocketbase";
+import Link from "next/link";
 
 const IdeaList = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: "",
-    },
-  });
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [formSearch, setFormSearch] = useState("");
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  const { data } = useSWR(
+    {
+      arg: {
+        page: 1,
+        perPage: 50,
+        options: searchQuery
+          ? { filter: `title ~ "${searchQuery}"`, expand: "user" }
+          : { expand: "user" },
+      },
+    },
+    GetListIdeas,
+    {
+      onError: (err) => {
+        if (err instanceof ClientResponseError) {
+          toast({
+            variant: "destructive",
+            title: "ERROR",
+            description: JSON.stringify(err.response, null, 2),
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "ERROR",
+            description: "Please try again later",
+          });
+        }
+      },
+    }
+  );
+
+  function onSubmit() {
+    setSearchQuery(formSearch);
   }
 
   return (
@@ -45,27 +75,25 @@ const IdeaList = () => {
       >
         Daftar Ide
       </h1>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className={`flex justify-center gap-2`}
-        >
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input placeholder="Search" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <Button type="submit">
-            <Search />
-          </Button>
-        </form>
-      </Form>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit();
+        }}
+        className={`flex justify-center gap-2`}
+      >
+        <Input
+          placeholder="Search"
+          value={formSearch}
+          onChange={(e) => setFormSearch(e.target.value)}
+        />
+
+        <Button type="submit">
+          <Search />
+        </Button>
+      </form>
+
       <div
         className={`
             flex flex-wrap justify-center gap-4
@@ -73,28 +101,37 @@ const IdeaList = () => {
             md:w-[1000px] md:justify-start
           `}
       >
-        <Card className={`w-full max-w-[300px]`}>
-          <Image
-            src="https://placehold.co/500x500.png"
-            width={400}
-            height={400}
-            alt="Picture of the author"
-          />
-          <CardHeader>
-            <CardTitle>Ide Utama</CardTitle>
-            <CardDescription>Jumlah Peserta</CardDescription>
-          </CardHeader>
-          <CardContent>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio
-            enim necessitatibus consequuntur voluptates molestias culpa
-            veritatis voluptat.
-          </CardContent>
-          <CardFooter className={`flex justify-center`}>
-            <Button>
-              See More
-            </Button>
-          </CardFooter>
-        </Card>
+        {data?.items.map((item) => {
+          return (
+            <Card key={item.id} className={`w-full max-w-[300px]`}>
+              <img
+                className="w-[300px] h-[300px]"
+                src={PocketBaseInstance.files.getUrl(item, item.images[0])}
+                width={400}
+                height={400}
+                alt="Picture of the author"
+              />
+              <CardHeader>
+                <CardTitle>{item.title}</CardTitle>
+                <CardDescription>
+                  {
+                    (
+                      item as unknown as {
+                        expand: { user: { fullname: string } };
+                      }
+                    ).expand.user.fullname
+                  }
+                </CardDescription>
+              </CardHeader>
+              <CardContent>{item.abstract}</CardContent>
+              <CardFooter className={`flex justify-center`}>
+                <Button asChild>
+                  <Link href={`/idea/${item.id}`}>Selengkapnya</Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          );
+        })}
       </div>
       <div className={`flex justify-center items-center gap-2`}>
         <Button>

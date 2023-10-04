@@ -1,7 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { ThumbsUp, User2 } from "lucide-react";
-import Image from "next/image";
+import useSWR from "swr";
+import { useParams } from "next/navigation";
+import Markdown from "react-markdown";
 
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
@@ -14,8 +17,37 @@ import {
   CardContent,
   CardFooter,
 } from "../ui/card";
+import { useToast } from "../ui/use-toast";
+import { ClientResponseError } from "pocketbase";
+import { GetIdeaDetail } from "@/services/ideas";
+import PocketBaseInstance from "@/lib/pocketbase";
+import { Suspense, useState } from "react";
 
 const IdeaDetail = () => {
+  const { toast } = useToast();
+  const params = useParams();
+  const { data, isLoading } = useSWR(
+    params.slug ? { arg: { record_id: params.slug } } : null,
+    GetIdeaDetail,
+    {
+      onError: (err) => {
+        if (err instanceof ClientResponseError) {
+          toast({
+            variant: "destructive",
+            title: "ERROR",
+            description: JSON.stringify(err.response, null, 2),
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "ERROR",
+            description: "Please try again later",
+          });
+        }
+      },
+    }
+  );
+
   return (
     <div className={`flex flex-col items-center`}>
       <div
@@ -24,8 +56,12 @@ const IdeaDetail = () => {
           w-full max-w-[1000px] md:min-h-[400px]
         `)}
       >
-        <Image
-          src="https://placehold.co/500x500.png"
+        <img
+          src={
+            data?.images.length
+              ? PocketBaseInstance.files.getUrl(data, data.images[0])
+              : ""
+          }
           width={400}
           height={400}
           alt="Picture of the author"
@@ -45,7 +81,7 @@ const IdeaDetail = () => {
              text-2xl
             `)}
           >
-            Pembuatan Instagram Bot Islami
+            {data?.title}
           </h1>
           <p
             className={cn(`
@@ -62,18 +98,15 @@ const IdeaDetail = () => {
               text-md text-gray-600
             `)}
           >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis
-            officia quod quibusdam culpa sapiente alias libero unde vero vitae,
-            eligendi dolor accusantium asperiores, repellendus itaque,
-            distinctio enim cumque voluptate illum!
+            {data?.abstract}
           </h4>
-          <div className={cn(`flex items-center gap-2`)}>
+          {/* <div className={cn(`flex items-center gap-2`)}>
             <p>500 Likes</p>
             <Button className={cn(`gap-1`)}>
               <ThumbsUp size="16px" />
               Like
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -86,50 +119,14 @@ const IdeaDetail = () => {
           my-6
         `)}
       >
-        <div className={cn(`flex flex-col basis-9/12 px-4 md:px-0 `)}>
-          <h1
-            className={cn(`
-              text-2xl my-4
-            `)}
-          >
-            Permasalahan
-          </h1>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem
-            beatae impedit excepturi repellendus, aliquid voluptatum maxime
-            adipisci doloremque sequi, temporibus nam consequuntur laborum
-            fugiat, magnam cumque amet vero dolore animi.
-          </p>
-          <h1
-            className={cn(`
-              text-2xl my-4
-            `)}
-          >
-            Solusi/Ide
-          </h1>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem
-            beatae impedit excepturi repellendus, aliquid voluptatum maxime
-            adipisci doloremque sequi, temporibus nam consequuntur laborum
-            fugiat, magnam cumque amet vero dolore animi.
-          </p>
-          <h1
-            className={cn(`
-              text-2xl my-4
-            `)}
-          >
-            Dampak
-          </h1>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem
-            beatae impedit excepturi repellendus, aliquid voluptatum maxime
-            adipisci doloremque sequi, temporibus nam consequuntur laborum
-            fugiat, magnam cumque amet vero dolore animi.
-          </p>
+        <div
+          className={cn(`flex flex-col basis-9/12 px-4 md:px-0 rich-editor`)}
+        >
+          <Markdown>{data?.description}</Markdown>
         </div>
 
         <div className={cn(`flex flex-col items-center basis-3/12`)}>
-          <h1
+          {/* <h1
             className={cn(`
               text-2xl my-4
             `)}
@@ -145,7 +142,7 @@ const IdeaDetail = () => {
               Distinctio enim necessitatibus consequuntur voluptates molestias
               culpa veritatis voluptat.
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
       </div>
     </div>
