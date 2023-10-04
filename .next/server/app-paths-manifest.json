@@ -1,0 +1,10 @@
+{
+  "/_not-found": "app/_not-found.js",
+  "/page": "app/page.js",
+  "/auth/page": "app/auth/page.js",
+  "/profile/page": "app/profile/page.js",
+  "/idea/[slug]/page": "app/idea/[slug]/page.js",
+  "/profile/ideas/page": "app/profile/ideas/page.js",
+  "/profile/ideas/create/page": "app/profile/ideas/create/page.js",
+  "/profile/ideas/edit/[slug]/page": "app/profile/ideas/edit/[slug]/page.js"
+}

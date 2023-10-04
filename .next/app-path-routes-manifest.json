@@ -1,0 +1,10 @@
+{
+  "/_not-found": "/_not-found",
+  "/page": "/",
+  "/auth/page": "/auth",
+  "/profile/page": "/profile",
+  "/idea/[slug]/page": "/idea/[slug]",
+  "/profile/ideas/page": "/profile/ideas",
+  "/profile/ideas/create/page": "/profile/ideas/create",
+  "/profile/ideas/edit/[slug]/page": "/profile/ideas/edit/[slug]"
+}
