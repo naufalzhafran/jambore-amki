@@ -7,10 +7,9 @@ import { getNextjsCookie } from "@/lib/servercookie";
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
   const request_cookie = request.cookies.get("pb_auth");
-  // console.log("middlware request cookie  ===",)
 
   const cookie = await getNextjsCookie(request_cookie);
-  const pb = new PocketBase("http://13.212.105.117:8090/");
+  const pb = new PocketBase("https://admin-jamboreamki.salmanitb.com/");
   if (cookie) {
     try {
       pb.authStore.loadFromCookie(cookie);

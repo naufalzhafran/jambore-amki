@@ -2849,7 +2849,7 @@ class AsyncAuthStore extends (/* unused pure expression or super */ null && (Bas
 var next_headers = __webpack_require__(952);
 ;// CONCATENATED MODULE: ./src/lib/pocketbase.ts
 
-const pocketbase_PocketBaseInstance = new Client("http://13.212.105.117:8090/");
+const pocketbase_PocketBaseInstance = new Client("https://admin-jamboreamki.salmanitb.com/");
 /* harmony default export */ const pocketbase = ((/* unused pure expression or super */ null && (pocketbase_PocketBaseInstance)));
 
 ;// CONCATENATED MODULE: ./src/lib/servercookie.ts
@@ -2919,9 +2919,8 @@ async function getNextjsCookie(request_cookie) {
 async function middleware(request) {
     const response = NextResponse.next();
     const request_cookie = request.cookies.get("pb_auth");
-    // console.log("middlware request cookie  ===",)
     const cookie = await getNextjsCookie(request_cookie);
-    const pb = new Client("http://13.212.105.117:8090/");
+    const pb = new Client("https://admin-jamboreamki.salmanitb.com/");
     if (cookie) {
         try {
             pb.authStore.loadFromCookie(cookie);
