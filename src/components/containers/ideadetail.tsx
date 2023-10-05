@@ -21,7 +21,6 @@ import { useToast } from "../ui/use-toast";
 import { ClientResponseError } from "pocketbase";
 import { GetIdeaDetail } from "@/services/ideas";
 import PocketBaseInstance from "@/lib/pocketbase";
-import { Suspense, useState } from "react";
 
 const IdeaDetail = () => {
   const { toast } = useToast();
@@ -34,14 +33,14 @@ const IdeaDetail = () => {
         if (err instanceof ClientResponseError) {
           toast({
             variant: "destructive",
-            title: "ERROR",
+            title: "Terjadi Kesalahan",
             description: JSON.stringify(err.response, null, 2),
           });
         } else {
           toast({
             variant: "destructive",
-            title: "ERROR",
-            description: "Please try again later",
+            title: "Terjadi Kesalahan",
+            description: "Tolong coba lagi setelah beberapa saat.",
           });
         }
       },
@@ -66,7 +65,7 @@ const IdeaDetail = () => {
           height={400}
           alt="Picture of the author"
           className={cn(`
-            flex-none
+            flex-none object-contain
           `)}
         />
         <div
@@ -91,7 +90,13 @@ const IdeaDetail = () => {
             `)}
           >
             <User2 />
-            Ilham Paramita
+            {
+              (
+                data as unknown as {
+                  expand: { user: { fullname: string } };
+                }
+              )?.expand?.user?.fullname
+            }
           </p>
           <h4
             className={cn(`

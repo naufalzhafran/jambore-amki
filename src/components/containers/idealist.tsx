@@ -1,10 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import Link from "next/link";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
-import useSWR from "swr";
+import { ListResult } from "pocketbase";
 
-import { useToast } from "../ui/use-toast";
+import { cn } from "@/lib/utils";
+import PocketBaseInstance from "@/lib/pocketbase";
+import { IdeasModel } from "@/interfaces";
+
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -15,52 +19,20 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { GetListIdeas } from "@/services/ideas";
-import { ClientResponseError } from "pocketbase";
-import PocketBaseInstance from "@/lib/pocketbase";
-import Link from "next/link";
 
-const IdeaList = () => {
-  const { toast } = useToast();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [formSearch, setFormSearch] = useState("");
+type IdeaListProps = {
+  formSearch: string;
+  setFormSearch: (val: string) => void;
+  onSearchSubmit: () => void;
+  data?: ListResult<IdeasModel>;
+};
 
-  const { data } = useSWR(
-    {
-      arg: {
-        page: 1,
-        perPage: 50,
-        options: searchQuery
-          ? { filter: `title ~ "${searchQuery}"`, expand: "user" }
-          : { expand: "user" },
-      },
-    },
-    GetListIdeas,
-    {
-      onError: (err) => {
-        if (err instanceof ClientResponseError) {
-          toast({
-            variant: "destructive",
-            title: "ERROR",
-            description: JSON.stringify(err.response, null, 2),
-          });
-        } else {
-          toast({
-            variant: "destructive",
-            title: "ERROR",
-            description: "Please try again later",
-          });
-        }
-      },
-    }
-  );
-
-  function onSubmit() {
-    setSearchQuery(formSearch);
-  }
-
+const IdeaList = ({
+  data,
+  formSearch,
+  onSearchSubmit,
+  setFormSearch,
+}: IdeaListProps) => {
   return (
     <div className={`flex flex-col items-center py-6`}>
       <h1
@@ -75,7 +47,7 @@ const IdeaList = () => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onSubmit();
+          onSearchSubmit();
         }}
         className={`flex justify-center gap-2`}
       >
@@ -101,7 +73,7 @@ const IdeaList = () => {
           return (
             <Card key={item.id} className={`w-full max-w-[300px]`}>
               <img
-                className="w-[300px] h-[300px]"
+                className="object-contain w-[300px] h-[300px]"
                 src={PocketBaseInstance.files.getUrl(item, item.images[0])}
                 width={400}
                 height={400}

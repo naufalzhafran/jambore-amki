@@ -68,18 +68,18 @@ const IdeaEdit = ({ userId }: { userId: string }) => {
       },
       onError: (err) => {
         if (err instanceof ClientResponseError) {
-          toast({
-            variant: "destructive",
-            title: "ERROR",
-            description: JSON.stringify(err.response, null, 2),
-          });
-        } else {
-          toast({
-            variant: "destructive",
-            title: "ERROR",
-            description: "Please try again later",
-          });
-        }
+        toast({
+          variant: "destructive",
+          title: "Terjadi Kesalahan",
+          description: JSON.stringify(err.response, null, 2),
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Terjadi Kesalahan",
+          description: "Tolong coba lagi setelah beberapa saat.",
+        });
+      }
       },
     }
   );

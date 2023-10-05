@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import useSWRMutation from "swr/mutation";
 import { Loader2 } from "lucide-react";
 import { ClientResponseError } from "pocketbase";
+import { useRouter } from "next/navigation";
 
 import {
   Form,
@@ -40,12 +41,13 @@ const formSchema = z
   })
   .required()
   .refine((data) => data.password === data.confirm, {
-    message: "Passwords don't match",
+    message: "Password tidak sama!",
     path: ["confirm"],
   });
 
 const Register = () => {
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,7 +60,7 @@ const Register = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const data = {
-      username: values.fullname,
+      username: values.fullname.replaceAll(" ", ""),
       email: values.email,
       emailVisibility: true,
       password: values.password,
@@ -71,21 +73,24 @@ const Register = () => {
     try {
       await trigger({ data });
       toast({
-        title: "SUCCESS",
-        description: "Your account is created, Please try to login.",
+        title: "Berhasil",
+        description:
+          "Akun anda berhasil dibuat. Silahkan coba untuk melakukan login",
       });
+      setTimeout(() => router.push("/auth"), 500);
+
     } catch (err) {
       if (err instanceof ClientResponseError) {
         toast({
           variant: "destructive",
-          title: "ERROR",
+          title: "Terjadi Kesalahan",
           description: JSON.stringify(err.response, null, 2),
         });
       } else {
         toast({
           variant: "destructive",
-          title: "ERROR",
-          description: "Please try again later",
+          title: "Terjadi Kesalahan",
+          description: "Tolong coba lagi setelah beberapa saat.",
         });
       }
     }

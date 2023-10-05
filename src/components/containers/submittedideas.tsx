@@ -31,18 +31,18 @@ const SubmittedIdeas = ({ userId }: { userId: string }) => {
     {
       onError: (err) => {
         if (err instanceof ClientResponseError) {
-          toast({
-            variant: "destructive",
-            title: "ERROR",
-            description: JSON.stringify(err.response, null, 2),
-          });
-        } else {
-          toast({
-            variant: "destructive",
-            title: "ERROR",
-            description: "Please try again later",
-          });
-        }
+        toast({
+          variant: "destructive",
+          title: "Terjadi Kesalahan",
+          description: JSON.stringify(err.response, null, 2),
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Terjadi Kesalahan",
+          description: "Tolong coba lagi setelah beberapa saat.",
+        });
+      }
       },
     }
   );
@@ -59,7 +59,7 @@ const SubmittedIdeas = ({ userId }: { userId: string }) => {
           return (
             <Card key={item.id} className={`w-full max-w-[300px]`}>
               <img
-                className="w-[300px] h-[300px]"
+                className="object-contain w-[300px] h-[300px]"
                 src={PocketBaseInstance.files.getUrl(item, item.images[0])}
                 width={400}
                 height={400}

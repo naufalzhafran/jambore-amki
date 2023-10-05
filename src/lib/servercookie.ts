@@ -1,4 +1,3 @@
-import PocketBase from "pocketbase";
 import { cookies, headers } from "next/headers";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import PocketBaseInstance from "./pocketbase";

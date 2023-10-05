@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { LogOut, User, UserCircle } from "lucide-react";
+import { Lightbulb, LogOut, User, UserCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import PocketBaseInstance from "@/lib/pocketbase";
@@ -65,7 +65,7 @@ const Header = () => {
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/profile/ideas">
-                      <User className="mr-2 h-4 w-4" />
+                      <Lightbulb className="mr-2 h-4 w-4" />
                       <span>Ide Saya</span>
                     </Link>
                   </DropdownMenuItem>

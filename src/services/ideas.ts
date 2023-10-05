@@ -36,6 +36,7 @@ export const GetListIdeas = ({
 
 export const GetIdeaDetail = ({ arg }: { arg: { record_id: string } }) => {
   return PocketBaseInstance.collection("ideas").getOne<IdeasModel>(
-    arg.record_id
+    arg.record_id,
+    { expand: "user" }
   );
 };

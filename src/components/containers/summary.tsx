@@ -1,17 +1,15 @@
+"use client";
+
+import Link from "next/link";
+import { ListResult } from "pocketbase";
+
+import { IdeasModel } from "@/interfaces";
 import { cn } from "@/lib/utils";
+
 import { Button } from "../ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { GetListIdeas } from "@/services/ideas";
-import Link from "next/link";
 
-const Summary = async () => {
-  const data = await GetListIdeas({
-    arg: {
-      page: 1,
-      perPage: 50,
-    },
-  });
-
+const Summary = ({ data }: { data?: ListResult<IdeasModel> }) => {
   return (
     <div
       className={cn(`
@@ -34,7 +32,7 @@ const Summary = async () => {
           p-2
         `)}
       >
-        Inpirasi Membangun Negeri
+        #InspirasiMembangunNegeri
       </h2>
       <Button asChild variant="secondary" className={`m-6 w-fit`}>
         <Link href="/profile/ideas/create">Daftarkan Karya Anda Disini</Link>
@@ -47,7 +45,7 @@ const Summary = async () => {
       >
         <Card className={`w-full max-w-[200px]`}>
           <CardHeader className={`items-center`}>
-            <CardTitle>{data?.totalItems}</CardTitle>
+            <CardTitle>{data?.totalItems || 0}</CardTitle>
             <CardDescription>Jumlah Ide</CardDescription>
           </CardHeader>
         </Card>

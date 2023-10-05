@@ -51,8 +51,8 @@ const Login = () => {
     try {
       await trigger({ email: values.email, password: values.password });
       toast({
-        title: "SUCCESS",
-        description: "Login Success",
+        title: "Berhasil",
+        description: "Anda telah berhasil login.",
       });
       document.cookie = PocketBaseInstance.authStore.exportToCookie({ httpOnly: false });
       setTimeout(() => router.push("/"), 500);
@@ -60,14 +60,14 @@ const Login = () => {
       if (err instanceof ClientResponseError) {
         toast({
           variant: "destructive",
-          title: "ERROR",
+          title: "Terjadi Kesalahan",
           description: JSON.stringify(err.response, null, 2),
         });
       } else {
         toast({
           variant: "destructive",
-          title: "ERROR",
-          description: "Please try again later",
+          title: "Terjadi Kesalahan",
+          description: "Tolong coba lagi setelah beberapa saat.",
         });
       }
     }
