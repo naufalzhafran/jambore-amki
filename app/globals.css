@@ -57,33 +57,46 @@
 }
 
 .rich-editor h1 {
-  @apply text-3xl font-bold;
+  @apply text-3xl font-bold my-8;
 }
 
 .rich-editor h2 {
-  @apply text-2xl font-bold;
+  @apply text-2xl font-bold my-8;
 }
 
 .rich-editor h3 {
-  @apply text-2xl font-semibold;
+  @apply text-2xl font-semibold my-6;
 }
 
 .rich-editor h4 {
-  @apply text-xl font-semibold;
+  @apply text-xl font-semibold my-6;
 }
 
 .rich-editor h5 {
-  @apply text-xl font-normal;
+  @apply text-xl font-normal my-3;
 }
 
 .rich-editor h6 {
-  @apply text-lg font-normal;
+  @apply text-lg font-normal my-3;
 }
 
 .rich-editor ul {
-  @apply list-disc list-inside;
+  @apply list-disc list-inside my-8;
+}
+
+.rich-editor ul li p {
+  @apply inline;
 }
 
 .rich-editor ol {
-  @apply list-decimal list-inside;
+  @apply list-decimal list-inside my-6;
+}
+
+.rich-editor ol li p {
+  @apply inline;
+}
+
+.rich-editor p,
+.rich-editor li {
+  @apply my-1;
 }
