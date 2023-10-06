@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import useSWRMutation from "swr/mutation";
 import useSWR from "swr";
@@ -29,6 +29,7 @@ import {
 } from "@/services/ideas";
 import PocketBaseInstance from "@/lib/pocketbase";
 import Link from "next/link";
+import { MDXEditorMethods } from "@mdxeditor/editor";
 
 const EditorComp = dynamic(() => import("../ui/rich-editor"), { ssr: false });
 
@@ -39,6 +40,7 @@ const IdeaEdit = ({ userId }: { userId: string }) => {
   const [imageFilename, setImageFilename] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [serverImage, setServerImage] = useState("");
+  const mdEditorRef = useRef<MDXEditorMethods | null>(null);
 
   const params = useParams();
   const router = useRouter();
@@ -59,6 +61,7 @@ const IdeaEdit = ({ userId }: { userId: string }) => {
       onSuccess: (data) => {
         setIdeaTitle(data.title);
         setLongDesc(data.description);
+        mdEditorRef.current?.setMarkdown(data.description);
         setAbstract(data.abstract);
         setImageFilename(data.images[0]);
         setServerImage(
@@ -86,6 +89,15 @@ const IdeaEdit = ({ userId }: { userId: string }) => {
   );
 
   const handleSubmit = async () => {
+    if (abstract.length > 450) {
+      toast({
+        variant: "destructive",
+        title: "Terjadi Kesalahan",
+        description: "Abstrak tidak boleh lebih dari 450 karakter.",
+      });
+      return;
+    }
+
     const formData = new FormData();
 
     formData.append("title", ideaTitle);
@@ -175,9 +187,12 @@ const IdeaEdit = ({ userId }: { userId: string }) => {
             <Textarea
               id="abstract"
               value={abstract}
-              placeholder="Maksimal 150 karakter"
+              placeholder="Maksimal 450 karakter"
               onChange={(e) => setAbstract(e.target.value)}
             />
+            <p className="p-1 text-xs text-right">
+              {abstract.length}/450 Karakter
+            </p>
           </div>
 
           <Suspense fallback={<div />}>
@@ -185,6 +200,7 @@ const IdeaEdit = ({ userId }: { userId: string }) => {
               <Label>Deskripsi Panjang</Label>
               <EditorComp
                 markdown={longDesc}
+                editorRef={mdEditorRef}
                 onChange={(val) => setLongDesc(val)}
               />
             </div>

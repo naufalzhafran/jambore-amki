@@ -77,7 +77,7 @@ const IdeaDetail = () => {
         >
           <h1
             className={cn(`
-             text-2xl
+             text-3xl font-bold
             `)}
           >
             {data?.title}

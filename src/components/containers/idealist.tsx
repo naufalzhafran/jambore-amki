@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { ListResult } from "pocketbase";
 
-import { cn } from "@/lib/utils";
+import { cn, truncateString } from "@/lib/utils";
 import PocketBaseInstance from "@/lib/pocketbase";
 import { IdeasModel } from "@/interfaces";
 
@@ -73,7 +73,10 @@ const IdeaList = ({
       >
         {data?.items.map((item) => {
           return (
-            <Card key={item.id} className={`w-full max-w-[300px]`}>
+            <Card
+              key={item.id}
+              className={`flex flex-col w-full max-w-[300px]`}
+            >
               <img
                 className="object-contain w-[300px] h-[300px]"
                 src={PocketBaseInstance.files.getUrl(item, item.images[0])}
@@ -93,7 +96,9 @@ const IdeaList = ({
                   }
                 </CardDescription>
               </CardHeader>
-              <CardContent>{item.abstract}</CardContent>
+              <CardContent className="h-[150px] text-clip">
+                {truncateString(item.abstract, 125)}
+              </CardContent>
               <CardFooter className={`flex justify-center`}>
                 <Button asChild>
                   <Link href={`/idea/${item.id}`}>Selengkapnya</Link>
