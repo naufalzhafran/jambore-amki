@@ -6,7 +6,7 @@ import useSWRMutation from "swr/mutation";
 import useSWR from "swr";
 import { ClientResponseError } from "pocketbase";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -41,6 +41,7 @@ const IdeaEdit = ({ userId }: { userId: string }) => {
   const [serverImage, setServerImage] = useState("");
 
   const params = useParams();
+  const router = useRouter();
 
   const { toast } = useToast();
 
@@ -68,18 +69,18 @@ const IdeaEdit = ({ userId }: { userId: string }) => {
       },
       onError: (err) => {
         if (err instanceof ClientResponseError) {
-        toast({
-          variant: "destructive",
-          title: "Terjadi Kesalahan",
-          description: JSON.stringify(err.response, null, 2),
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Terjadi Kesalahan",
-          description: "Tolong coba lagi setelah beberapa saat.",
-        });
-      }
+          toast({
+            variant: "destructive",
+            title: "Terjadi Kesalahan",
+            description: JSON.stringify(err.response, null, 2),
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Terjadi Kesalahan",
+            description: "Tolong coba lagi setelah beberapa saat.",
+          });
+        }
       },
     }
   );
@@ -110,23 +111,24 @@ const IdeaEdit = ({ userId }: { userId: string }) => {
         await triggerCreate({ data: formData });
       }
       toast({
-        title: "SUCCESS",
+        title: "Berhasil",
         description: params.slug
-          ? "Your Idea is Updated "
-          : "Your Idea is submitted",
+          ? "Ide anda berhasil diubah"
+          : "Ide anda berhasil didaftarkan",
       });
+      setTimeout(() => router.push("/profile/ideas"), 500);
     } catch (err) {
       if (err instanceof ClientResponseError) {
         toast({
           variant: "destructive",
-          title: "ERROR",
+          title: "Terjadi Kesalahan",
           description: JSON.stringify(err.response, null, 2),
         });
       } else {
         toast({
           variant: "destructive",
-          title: "ERROR",
-          description: "Please try again later",
+          title: "Terjadi Kesalahan",
+          description: "Tolong coba lagi setelah beberapa saat.",
         });
       }
     }

@@ -31,28 +31,40 @@ const SubmittedIdeas = ({ userId }: { userId: string }) => {
     {
       onError: (err) => {
         if (err instanceof ClientResponseError) {
-        toast({
-          variant: "destructive",
-          title: "Terjadi Kesalahan",
-          description: JSON.stringify(err.response, null, 2),
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Terjadi Kesalahan",
-          description: "Tolong coba lagi setelah beberapa saat.",
-        });
-      }
+          toast({
+            variant: "destructive",
+            title: "Terjadi Kesalahan",
+            description: JSON.stringify(err.response, null, 2),
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Terjadi Kesalahan",
+            description: "Tolong coba lagi setelah beberapa saat.",
+          });
+        }
       },
     }
   );
 
   return (
-    <main className={cn(`min-h-[calc(100vh-80px)] px-6 py-10`)}>
+    <main
+      className={cn(
+        `flex flex-col items-center min-h-[calc(100vh-80px)] px-6 py-10`
+      )}
+    >
+      <h1
+        className={cn(`
+          text-center text-4xl font-bold
+          p-10
+        `)}
+      >
+        Daftar Ide
+      </h1>
       <div
         className={cn(`
         flex justify-center items-start flex-wrap gap-5    
-        md:justify-start
+        md:w-[1000px] md:justify-start
       `)}
       >
         {data?.items.map((item) => {
@@ -85,11 +97,13 @@ const SubmittedIdeas = ({ userId }: { userId: string }) => {
         >
           <Link
             className={cn(`
-              w-full h-full p-10
-              flex items-center justify-center
+            w-full h-full px-10 py-16 relative
+            flex flex-col items-center justify-center
+            hover:bg-gray-100
             `)}
             href="/profile/ideas/create"
           >
+            <span className="absolute top-7">Tambahkan Ide</span>
             <Plus />
           </Link>
         </Card>
