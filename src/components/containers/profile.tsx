@@ -40,7 +40,10 @@ const formSchema = z
 const Profile = ({
   profileData,
 }: {
-  profileData?: Partial<z.infer<typeof formSchema>> & { id?: string };
+  profileData?: Partial<z.infer<typeof formSchema>> & {
+    id?: string;
+    data_id?: string;
+  };
 }) => {
   const { toast } = useToast();
 
@@ -64,7 +67,11 @@ const Profile = ({
     }
 
     try {
-      await trigger({ userId: profileData?.id || "", data: values });
+      await trigger({
+        userId: profileData?.id || "",
+        dataId: profileData?.data_id || "",
+        data: values,
+      });
       toast({
         title: "SUCCESS",
         description: "Your data is successfully changed",

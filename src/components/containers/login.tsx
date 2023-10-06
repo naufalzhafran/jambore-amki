@@ -54,7 +54,9 @@ const Login = () => {
         title: "Berhasil",
         description: "Anda telah berhasil login.",
       });
-      document.cookie = PocketBaseInstance.authStore.exportToCookie({ httpOnly: false });
+      document.cookie = PocketBaseInstance.authStore.exportToCookie({
+        httpOnly: false,
+      });
       setTimeout(() => router.push("/"), 500);
     } catch (err) {
       if (err instanceof ClientResponseError) {

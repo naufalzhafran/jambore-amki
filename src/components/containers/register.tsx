@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import useSWRMutation from "swr/mutation";
 import { Loader2 } from "lucide-react";
 import { ClientResponseError } from "pocketbase";
-import { useRouter } from "next/navigation";
 
 import {
   Form,
@@ -29,6 +28,7 @@ import { PostRegisterUser } from "@/services/users";
 import { useToast } from "@/components/ui/use-toast";
 
 import { Separator } from "../ui/separator";
+import PocketBaseInstance from "@/lib/pocketbase";
 
 const formSchema = z
   .object({
@@ -47,7 +47,6 @@ const formSchema = z
 
 const Register = () => {
   const { toast } = useToast();
-  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,7 +59,9 @@ const Register = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const data = {
-      username: values.fullname.replaceAll(" ", ""),
+      username: `${values.fullname.replaceAll(" ", "")}${Math.floor(
+        Math.random() * 100
+      )}`,
       email: values.email,
       emailVisibility: true,
       password: values.password,
@@ -74,11 +75,12 @@ const Register = () => {
       await trigger({ data });
       toast({
         title: "Berhasil",
-        description:
-          "Akun anda berhasil dibuat. Silahkan coba untuk melakukan login",
+        description: "Akun anda berhasil dibuat. Silahkan coba untuk login.",
       });
-      setTimeout(() => router.push("/auth"), 500);
-
+      document.cookie = PocketBaseInstance.authStore.exportToCookie({
+        httpOnly: false,
+      });
+      setTimeout(() => location.reload(), 500);
     } catch (err) {
       if (err instanceof ClientResponseError) {
         toast({
