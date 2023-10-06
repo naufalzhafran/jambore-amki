@@ -14,12 +14,13 @@ const Homepage = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [formSearch, setFormSearch] = useState("");
+  const [listPage, setListPage] = useState(1);
 
   const { data } = useSWR(
     {
       arg: {
-        page: 1,
-        perPage: 50,
+        page: listPage,
+        perPage: 8,
         options: searchQuery
           ? { filter: `title ~ "${searchQuery}"`, expand: "user" }
           : { expand: "user" },
@@ -29,18 +30,18 @@ const Homepage = () => {
     {
       onError: (err) => {
         if (err instanceof ClientResponseError) {
-        toast({
-          variant: "destructive",
-          title: "Terjadi Kesalahan",
-          description: JSON.stringify(err.response, null, 2),
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Terjadi Kesalahan",
-          description: "Tolong coba lagi setelah beberapa saat.",
-        });
-      }
+          toast({
+            variant: "destructive",
+            title: "Terjadi Kesalahan",
+            description: JSON.stringify(err.response, null, 2),
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Terjadi Kesalahan",
+            description: "Tolong coba lagi setelah beberapa saat.",
+          });
+        }
       },
     }
   );
@@ -55,6 +56,7 @@ const Homepage = () => {
       <IdeaList
         data={data}
         formSearch={formSearch}
+        setListPage={setListPage}
         setFormSearch={setFormSearch}
         onSearchSubmit={onSearchSubmit}
       />

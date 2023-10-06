@@ -22,14 +22,16 @@ import {
 
 type IdeaListProps = {
   formSearch: string;
+  data?: ListResult<IdeasModel>;
+  setListPage: (val: number) => void;
   setFormSearch: (val: string) => void;
   onSearchSubmit: () => void;
-  data?: ListResult<IdeasModel>;
 };
 
 const IdeaList = ({
   data,
   formSearch,
+  setListPage,
   onSearchSubmit,
   setFormSearch,
 }: IdeaListProps) => {
@@ -102,11 +104,25 @@ const IdeaList = ({
         })}
       </div>
       <div className={`flex justify-center items-center gap-2`}>
-        <Button>
+        <Button
+          onClick={() => {
+            if ((data?.page || 1) > 1) {
+              setListPage((data?.page || 1) - 1);
+            }
+          }}
+        >
           <ChevronLeft />
         </Button>
-        <p>Page 1 of 10</p>
-        <Button>
+        <p>
+          Page {data?.page} of {data?.totalPages}
+        </p>
+        <Button
+          onClick={() => {
+            if ((data?.page || 1) < (data?.totalPages || 1)) {
+              setListPage((data?.page || 1) + 1);
+            }
+          }}
+        >
           <ChevronRight />
         </Button>
       </div>
