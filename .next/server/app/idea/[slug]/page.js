@@ -8,7 +8,7 @@
             p-5
             md:items-start
           `),children:[s.jsx("h1",{className:(0,o.cn)(`
-             text-2xl
+             text-3xl font-bold
             `),children:t?.title}),(0,s.jsxs)("p",{className:(0,o.cn)(`
               flex gap-2
               w-full
