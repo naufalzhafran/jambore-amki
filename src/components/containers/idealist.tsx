@@ -82,10 +82,12 @@ const IdeaList = ({
                 src={PocketBaseInstance.files.getUrl(item, item.images[0])}
                 width={400}
                 height={400}
-                alt="Picture of the author"
+                alt={item.title}
               />
               <CardHeader>
-                <CardTitle>{item.title}</CardTitle>
+                <CardTitle className="uppercase">
+                  {truncateString(item.title, 100)}
+                </CardTitle>
                 <CardDescription>
                   {
                     (

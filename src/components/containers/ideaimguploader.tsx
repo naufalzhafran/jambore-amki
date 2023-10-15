@@ -58,7 +58,7 @@ const IdeaImgUploader = ({
         <img
           className="w-full rounded-md"
           src={URL.createObjectURL(files[selectedFile])}
-          alt="idea"
+          alt="Uploaded file"
         />
       ) : imagesUrl && imagesUrl.length ? (
         <img className="w-full rounded-md" src={imagesUrl[0]} alt="idea" />

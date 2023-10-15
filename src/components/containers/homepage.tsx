@@ -22,8 +22,12 @@ const Homepage = () => {
         page: listPage,
         perPage: 8,
         options: searchQuery
-          ? { filter: `title ~ "${searchQuery}"`, expand: "user" }
-          : { expand: "user" },
+          ? {
+              filter: `title ~ "${searchQuery}"`,
+              expand: "user",
+              sort: "sort=-created",
+            }
+          : { expand: "user", sort: "-created" },
       },
     },
     GetListIdeas,

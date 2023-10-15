@@ -63,7 +63,7 @@ const IdeaDetail = () => {
           }
           width={400}
           height={400}
-          alt="Picture of the author"
+          alt={data?.title}
           className={cn(`
             flex-none object-contain
           `)}

@@ -92,7 +92,7 @@ const SubmittedIdeas = ({ userId }: { userId: string }) => {
                 src={PocketBaseInstance.files.getUrl(item, item.images[0])}
                 width={400}
                 height={400}
-                alt="Picture of the author"
+                alt={item.title}
               />
               <CardHeader>
                 <CardTitle>{item.title}</CardTitle>
