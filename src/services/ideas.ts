@@ -22,6 +22,13 @@ export const PostUpdateIdeas = async (
   );
 };
 
+export const DeleteUpdateIdeas = async (
+  _key: string,
+  { arg }: { arg: { record_id: string } }
+) => {
+  return await PocketBaseInstance.collection("ideas").delete(arg.record_id);
+};
+
 export const GetListIdeas = ({
   arg,
 }: {

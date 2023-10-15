@@ -4,10 +4,11 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import useSWR from "swr";
+import useSWRMutation from "swr/mutation";
 import { ClientResponseError } from "pocketbase";
 
 import { cn } from "@/lib/utils";
-import { GetListIdeas } from "@/services/ideas";
+import { DeleteUpdateIdeas, GetListIdeas } from "@/services/ideas";
 
 import { Button } from "../ui/button";
 import {
@@ -19,11 +20,27 @@ import {
 } from "../ui/card";
 import { useToast } from "../ui/use-toast";
 import PocketBaseInstance from "@/lib/pocketbase";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 
 const SubmittedIdeas = ({ userId }: { userId: string }) => {
   const { toast } = useToast();
 
-  const { data } = useSWR(
+  const { trigger, isMutating } = useSWRMutation(
+    "/users/delete",
+    DeleteUpdateIdeas
+  );
+
+  const { data, mutate } = useSWR(
     {
       arg: { page: 1, perPage: 50, options: { filter: `user = "${userId}"` } },
     },
@@ -85,7 +102,31 @@ const SubmittedIdeas = ({ userId }: { userId: string }) => {
                 <Button asChild>
                   <Link href={`/profile/ideas/edit/${item.id}`}>Edit</Link>
                 </Button>
-                <Button>Delete</Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button>Delete</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Apakah Kamu Yakin?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Aksi yang akan kamu lakukan adalah menghapus ide yang
+                        telah kamu tulis.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Batal</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          trigger({ record_id: item.id });
+                          mutate();
+                        }}
+                      >
+                        Hapus
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </CardFooter>
             </Card>
           );
