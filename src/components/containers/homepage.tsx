@@ -16,7 +16,7 @@ const Homepage = () => {
   const [formSearch, setFormSearch] = useState("");
   const [listPage, setListPage] = useState(1);
 
-  const { data } = useSWR(
+  const { isLoading, data } = useSWR(
     {
       arg: {
         page: listPage,
@@ -25,7 +25,7 @@ const Homepage = () => {
           ? {
               filter: `title ~ "${searchQuery}"`,
               expand: "user",
-              sort: "sort=-created",
+              sort: "-created",
             }
           : { expand: "user", sort: "-created" },
       },
@@ -58,6 +58,7 @@ const Homepage = () => {
     <main className="p-y-4">
       <Summary data={data} />
       <IdeaList
+        isLoading={isLoading}
         data={data}
         formSearch={formSearch}
         setListPage={setListPage}

@@ -19,8 +19,10 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import { Skeleton } from "../ui/skeleton";
 
 type IdeaListProps = {
+  isLoading: boolean;
   formSearch: string;
   data?: ListResult<IdeasModel>;
   setListPage: (val: number) => void;
@@ -29,6 +31,7 @@ type IdeaListProps = {
 };
 
 const IdeaList = ({
+  isLoading,
   data,
   formSearch,
   setListPage,
@@ -71,44 +74,72 @@ const IdeaList = ({
             md:w-[1000px] md:justify-start
           `}
       >
-        {data?.items.map((item) => {
-          return (
-            <Card
-              key={item.id}
-              className={`flex flex-col w-full max-w-[300px]`}
-            >
-              <img
-                className="object-contain w-[300px] h-[300px]"
-                src={PocketBaseInstance.files.getUrl(item, item.images[0])}
-                width={400}
-                height={400}
-                alt={item.title}
-              />
+        {isLoading &&
+          [1, 2, 3].map((key) => (
+            <Card key={key} className={`flex flex-col w-full max-w-[300px]`}>
+              <Skeleton className="object-contain w-[300px] h-[300px]" />
               <CardHeader>
-                <CardTitle className="uppercase">
-                  {truncateString(item.title, 100)}
-                </CardTitle>
-                <CardDescription>
-                  {
-                    (
-                      item as unknown as {
-                        expand: { user: { fullname: string } };
-                      }
-                    ).expand?.user?.fullname
-                  }
-                </CardDescription>
+                <Skeleton className="h-6 w-[250px]" />
+                <Skeleton className="h-6 w-[250px]" />
+                <Skeleton className="h-4 w-[100px]" />
               </CardHeader>
-              <CardContent className="h-[150px] text-clip">
-                {truncateString(item.abstract, 125)}
+              <CardContent className="h-[150px] flex flex-col gap-1">
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[250px]" />
               </CardContent>
               <CardFooter className={`flex justify-center`}>
-                <Button asChild>
-                  <Link href={`/idea/${item.id}`}>Selengkapnya</Link>
-                </Button>
+                <Skeleton className="h-10 w-[150px]" />
               </CardFooter>
             </Card>
-          );
-        })}
+          ))}
+
+        {data?.items.length ? (
+          data?.items.map((item) => {
+            return (
+              <Card
+                key={item.id}
+                className={`flex flex-col w-full max-w-[300px]`}
+              >
+                <img
+                  className="object-contain w-[300px] h-[300px]"
+                  src={PocketBaseInstance.files.getUrl(item, item.images[0])}
+                  width={400}
+                  height={400}
+                  alt={item.title}
+                />
+                <CardHeader>
+                  <CardTitle className="uppercase">
+                    {truncateString(item.title, 100)}
+                  </CardTitle>
+                  <CardDescription>
+                    {
+                      (
+                        item as unknown as {
+                          expand: { user: { fullname: string } };
+                        }
+                      ).expand?.user?.fullname
+                    }
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="h-[150px] text-clip">
+                  {truncateString(item.abstract, 125)}
+                </CardContent>
+                <CardFooter className={`flex justify-center`}>
+                  <Button asChild>
+                    <Link href={`/idea/${item.id}`}>Selengkapnya</Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            );
+          })
+        ) : (
+          <div className="w-full flex items-center justify-center h-[300px]">
+            <p>Daftar Ide Kosong</p>
+          </div>
+        )}
       </div>
       <div className={`flex justify-center items-center gap-2`}>
         <Button
@@ -121,7 +152,7 @@ const IdeaList = ({
           <ChevronLeft />
         </Button>
         <p>
-          Page {data?.page} of {data?.totalPages}
+          Halaman {data?.page} of {data?.totalPages}
         </p>
         <Button
           onClick={() => {
